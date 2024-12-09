@@ -54,4 +54,12 @@ app.get("/", (request, response) => {
     response.render("index");
 });
 
+app.get("/weather", (req, res) => {
+    const city = req.query.location;
+    if (!city) {
+        return res.redirect("/");
+    }
+    res.render("weather", { city });
+});
+
 app.listen(portNumber);

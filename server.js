@@ -55,41 +55,22 @@ app.get("/", (req, res) => {
 });
 
 app.get("/weather", async (req, res) => {
-    const { city } = req.query;
-
+    const city = req.query.location;
     if (!city) {
         return res.status(400).send({ error: "City is required" });
     }
 
-    try {
-        const apiKey = process.env.WEATHER_API_KEY;
-        const weatherUrl = `https://api.weatherapi.com/v1/current.json?q=${city}&key=${apiKey}`;
-        const weatherResponse = await axios.get(weatherUrl);
-        const weatherData = response.data;
+    const apiKey = process.env.WEATHER_API_KEY;
+    const weatherUrl = `https://api.weatherapi.com/v1/current.json?q=${encodeURIComponent(city)}&key=${apiKey}`;
+    const weatherResponse = await fetch(weatherUrl);
+    const weatherData = await weatherResponse.json();
 
-        const moonUrl = `https://api.weatherapi.com/v1/astronomy.json?q=${city}&key=${apiKey}`;
-        const moonResponse = await axios.get(moonUrl);
-        const moonData = response.data;
+    const moonUrl = `https://api.weatherapi.com/v1/astronomy.json?q=${encodeURIComponent(city)}&key=${apiKey}`;
+    const moonResponse = await fetch(moonUrl);
+    const moonData = await moonResponse.json();
 
-        data = {
-            city: weatherData.location.name,
-            temperature: weatherData.current.temp_f,
-            description: weatherData.condition.text,
-            
-        }
+    const hour = parseInt(weatherData.location.localtime.split(" ")[1].split(":")[0]);
 
-        res.render("weather", data)
-    } catch (error) {
-        res.status(500).send({ error: "Unable to fetch weather data" });
-    }
-});
-
-app.get("/weather", (req, res) => {
-    const city = req.query.location || "Unknown";
-    const now = new Date();
-    const hour = now.toLocaleString("en-US", { timeZone: "America/New_York", hour: "2-digit", hour12: false });
-
-    // Determine background color based on hour
     let gradient = "";
     if (hour >= 7 && hour < 18) {
         gradient = "linear-gradient(to bottom, #87CEEB, #e6f7ff)"; // Light blue (day)
@@ -99,7 +80,16 @@ app.get("/weather", (req, res) => {
         gradient = "linear-gradient(to bottom, #000033, #000011)"; // Dark dark blue (night)
     }
 
-    res.render("weather", { city, gradient });
+    data = {
+        city: weatherData.location.name,
+        temperature: weatherData.current.temp_f,
+        description: weatherData.current.condition.text,
+        moonPhase: moonData.astronomy.astro.moon_phase,
+        moonIllumination: moonData.astronomy.astro.moon_illumination,
+        gradient: gradient
+    }
+    res.render("weather", data)
+
 });
 
 app.listen(portNumber);

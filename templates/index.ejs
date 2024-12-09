@@ -1,21 +1,55 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-	<meta charset="utf-8" />
-	<title>Summer Camp</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background: linear-gradient(to bottom, #87CEEB, #e6f7ff);
+            /* Light blue gradient */
+            color: #333;
+        }
+
+        input {
+            margin: 10px;
+            padding: 10px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #004494;
+        }
+
+        hr {
+            margin: 20px 0;
+        }
+    </style>
 </head>
 
 <body>
-	<h1>Weather</h1>
-
-    <h2>Enter a location:</h2>
-    <form>
-        <input type="text">
-        <input type="submit">
+    <h1>Weather</h1>
+    <form action="/weather" method="GET">
+        <p>Enter a location to check the weather:</p>
+        <input type="text" name="location" placeholder="Enter city name" required>
+        <button type="submit">Check Weather</button>
     </form>
-    
-	<hr>
+    <hr>
 </body>
 
 </html>

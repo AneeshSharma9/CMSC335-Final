@@ -84,4 +84,22 @@ app.get("/weather", async (req, res) => {
     }
 });
 
+app.get("/weather", (req, res) => {
+    const city = req.query.location || "Unknown";
+    const now = new Date();
+    const hour = now.toLocaleString("en-US", { timeZone: "America/New_York", hour: "2-digit", hour12: false });
+
+    // Determine background color based on hour
+    let gradient = "";
+    if (hour >= 7 && hour < 18) {
+        gradient = "linear-gradient(to bottom, #87CEEB, #e6f7ff)"; // Light blue (day)
+    } else if (hour >= 18 && hour < 24) {
+        gradient = "linear-gradient(to bottom, #001f3f, #003366)"; // Dark blue (evening)
+    } else {
+        gradient = "linear-gradient(to bottom, #000033, #000011)"; // Dark dark blue (night)
+    }
+
+    res.render("weather", { city, gradient });
+});
+
 app.listen(portNumber);

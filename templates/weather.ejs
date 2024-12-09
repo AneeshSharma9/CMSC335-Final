@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather in <%= city %>
+    </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            color: white;
+            background: <%=gradient %>;
+            /* Dynamically set gradient */
+            background-size: cover;
+            background-attachment: fixed;
+            transition: background 0.5s ease-in-out;
+        }
+
+        input {
+            margin: 10px;
+            padding: 10px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: white;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ccc;
+        }
+
+        hr {
+            margin: 20px 0;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 80%;
+            color: white;
+        }
+
+        th,
+        td {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Weather in <%= city %>
+    </h1>
+    <form action="/weather" method="GET">
+        <p>Enter a location to check the weather:</p>
+        <input type="text" name="location" placeholder="Enter city name" required>
+        <button type="submit">Check Weather</button>
+    </form>
+    <hr>
+    <table>
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Condition</th>
+                <th>High</th>
+                <th>Low</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (let i=0; i < 7; i++) { %>
+                <tr>
+                    <td>Day <%= i + 1 %>
+                    </td>
+                    <td>Sunny</td>
+                    <td>
+                        <%= 20 + i %>°C
+                    </td>
+                    <td>
+                        <%= 10 + i %>°C
+                    </td>
+                </tr>
+                <% } %>
+        </tbody>
+    </table>
+</body>
+
+</html>

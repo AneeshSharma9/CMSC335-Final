@@ -50,8 +50,38 @@ process.stdin.on("readable", async function () {
 
 let portInfo = { port: portNumber }
 
-app.get("/", (request, response) => {
-    response.render("index");
+app.get("/", (req, res) => {
+    res.render("index");
+});
+
+app.get("/weather", async (req, res) => {
+    const { city } = req.query;
+
+    if (!city) {
+        return res.status(400).send({ error: "City is required" });
+    }
+
+    try {
+        const apiKey = process.env.WEATHER_API_KEY;
+        const weatherUrl = `https://api.weatherapi.com/v1/current.json?q=${city}&key=${apiKey}`;
+        const weatherResponse = await axios.get(weatherUrl);
+        const weatherData = response.data;
+
+        const moonUrl = `https://api.weatherapi.com/v1/astronomy.json?q=${city}&key=${apiKey}`;
+        const moonResponse = await axios.get(moonUrl);
+        const moonData = response.data;
+
+        data = {
+            city: weatherData.location.name,
+            temperature: weatherData.current.temp_f,
+            description: weatherData.condition.text,
+            
+        }
+
+        res.render("weather", data)
+    } catch (error) {
+        res.status(500).send({ error: "Unable to fetch weather data" });
+    }
 });
 
 app.listen(portNumber);

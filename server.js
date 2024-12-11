@@ -71,6 +71,8 @@ app.get("/weather", async (req, res) => {
 
     const hour = parseInt(weatherData.location.localtime.split(" ")[1].split(":")[0]);
 
+    console.log(JSON.stringify(weatherData, null, 2));
+
     let gradient = "";
     if (hour >= 7 && hour < 18) {
         gradient = "linear-gradient(to bottom, #87CEEB, #e6f7ff)"; // Light blue (day)

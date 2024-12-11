@@ -121,28 +121,32 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Day</th>
+                                        <th>Date</th>
                                         <th>Condition</th>
-                                        <th>High</th>
-                                        <th>Low</th>
+                                        <th>High (°F)</th>
+                                        <th>Low (°F)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <% for (let i=0; i < 7; i++) { %>
+                                    <% forecast.forEach(day=> { %>
                                         <tr>
-                                            <td>Day <%= i + 1 %>
-                                            </td>
-                                            <td>Sunny</td>
                                             <td>
-                                                <%= 20 + i %>°C
+                                                <%= day.date %>
                                             </td>
                                             <td>
-                                                <%= 10 + i %>°C
+                                                <%= day.condition %>
+                                            </td>
+                                            <td>
+                                                <%= day.high %>
+                                            </td>
+                                            <td>
+                                                <%= day.low %>
                                             </td>
                                         </tr>
-                                        <% } %>
+                                        <% }); %>
                                 </tbody>
                             </table>
+
 
                             <script>
                                 const description = "<%= description.toLowerCase() %>";

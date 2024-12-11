@@ -61,7 +61,7 @@ app.get("/weather", async (req, res) => {
     }
 
     const apiKey = process.env.WEATHER_API_KEY;
-    const weatherUrl = `https://api.weatherapi.com/v1/current.json?q=${encodeURIComponent(city)}&key=${apiKey}`;
+    const weatherUrl = `https://api.weatherapi.com/v1/forecast.json?q=${encodeURIComponent(city)}&key=${apiKey}&days=7`;
     const weatherResponse = await fetch(weatherUrl);
     const weatherData = await weatherResponse.json();
 
@@ -82,6 +82,14 @@ app.get("/weather", async (req, res) => {
         gradient = "linear-gradient(to bottom, #000033, #000011)"; // Dark dark blue (night)
     }
 
+    // Pass forecast data to the template
+    const forecast = weatherData.forecast.forecastday.map(day => ({
+        date: day.date,
+        condition: day.day.condition.text,
+        high: day.day.maxtemp_f,
+        low: day.day.mintemp_f,
+    }));
+
     data = {
         city: weatherData.location.name,
         state: weatherData.location.region,
@@ -89,10 +97,11 @@ app.get("/weather", async (req, res) => {
         description: weatherData.current.condition.text,
         moonPhase: moonData.astronomy.astro.moon_phase,
         moonIllumination: moonData.astronomy.astro.moon_illumination,
-        gradient: gradient
-    }
-    res.render("weather", data)
-
+        gradient: gradient,
+        forecast: forecast, // Pass the forecast array to the template
+    };
+    res.render("weather", data);
 });
+
 
 app.listen(portNumber);

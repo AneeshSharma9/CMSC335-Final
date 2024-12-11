@@ -15,17 +15,17 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 console.log(`Web server started and running at http://localhost:${portNumber}`);
 
-const databaseAndCollection = { db: process.env.MONGO_DB_NAME, collection: process.env.MONGO_COLLECTION };
-const { MongoClient, ServerApiVersion } = require('mongodb');
-// TODO: fix uri
-const uri = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@temporary`;
-const client = new MongoClient(uri, {
-    serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-    }
-});
+// const databaseAndCollection = { db: process.env.MONGO_DB_NAME, collection: process.env.MONGO_COLLECTION };
+// const { MongoClient, ServerApiVersion } = require('mongodb');
+// // TODO: fix uri
+// const uri = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@temporary`;
+// const client = new MongoClient(uri, {
+//     serverApi: {
+//         version: ServerApiVersion.v1,
+//         strict: true,
+//         deprecationErrors: true,
+//     }
+// });
 
 process.stdout.write("Stop to shutdown the server: ");
 process.stdin.on("readable", async function () {
@@ -82,6 +82,7 @@ app.get("/weather", async (req, res) => {
 
     data = {
         city: weatherData.location.name,
+        state: weatherData.location.region,
         temperature: weatherData.current.temp_f,
         description: weatherData.current.condition.text,
         moonPhase: moonData.astronomy.astro.moon_phase,

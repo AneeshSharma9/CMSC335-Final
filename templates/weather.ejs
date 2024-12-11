@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather in <%= city %>
+    <title>Weather in <%= city %>, <%= state %>
     </title>
     <style>
         body {
@@ -101,54 +101,58 @@
     </style>
 </head>
 
-<body >
+<body>
     <div id="animation"></div>
-    <h1>Weather in <%= city %></h1>
+    <h1>Weather in <%= city %>, <%= state %>
+    </h1>
     <form action="/weather" method="GET">
         <p>Enter a city/zipcode to check the weather:</p>
         <input type="text" name="location" placeholder="Enter city/zipcode" required>
         <button type="submit">Check Weather</button>
     </form>
 
-    <h1><%= temperature %> °F<h1>
-    <h2><%= description %><h2>
+    <h1>
+        <%= temperature %> °F<h1>
+                <h2>
+                    <%= description %>
+                        <h2>
 
-    <hr>
-    <table>
-        <thead>
-            <tr>
-                <th>Day</th>
-                <th>Condition</th>
-                <th>High</th>
-                <th>Low</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% for (let i=0; i < 7; i++) { %>
-                <tr>
-                    <td>Day <%= i + 1 %>
-                    </td>
-                    <td>Sunny</td>
-                    <td>
-                        <%= 20 + i %>°C
-                    </td>
-                    <td>
-                        <%= 10 + i %>°C
-                    </td>
-                </tr>
-                <% } %>
-        </tbody>
-    </table>
+                            <hr>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Day</th>
+                                        <th>Condition</th>
+                                        <th>High</th>
+                                        <th>Low</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for (let i=0; i < 7; i++) { %>
+                                        <tr>
+                                            <td>Day <%= i + 1 %>
+                                            </td>
+                                            <td>Sunny</td>
+                                            <td>
+                                                <%= 20 + i %>°C
+                                            </td>
+                                            <td>
+                                                <%= 10 + i %>°C
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                                </tbody>
+                            </table>
 
-    <script>
-        const description = "<%= description.toLowerCase() %>";
-        
-        if (description.includes("snow")) {
-            document.body.classList.add("snow");
-        } else if (description.includes("rain")) {
-            document.body.classList.add("rain");
-        }
-    </script>
+                            <script>
+                                const description = "<%= description.toLowerCase() %>";
+
+                                if (description.includes("snow")) {
+                                    document.body.classList.add("snow");
+                                } else if (description.includes("rain")) {
+                                    document.body.classList.add("rain");
+                                }
+                            </script>
 </body>
 
 </html>

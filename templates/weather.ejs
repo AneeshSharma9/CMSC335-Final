@@ -4,13 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TerpWeather - <%= city %>, <%= state %></title>
+    <title>TerpWeather - <%= city %>, <%= state %>
+    </title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background: <%= gradient %>;
+            background: <%=gradient %>;
             color: white;
             display: flex;
             height: 100vh;
@@ -81,13 +82,15 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
-        h1, h2, h3 {
+        h1,
+        h2,
+        h3 {
             margin: 0;
         }
 
         .temperature {
-            margin-top:30px;
-            margin-bottom:15px;
+            margin-top: 30px;
+            margin-bottom: 15px;
             font-size: 3em;
         }
 
@@ -150,9 +153,49 @@
             text-decoration: none;
             font-weight: bold;
             font-size: 2.5rem;
-            margin-right: 20px; 
+            margin-right: 20px;
         }
-        
+
+        .searches-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .searches-card h4 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+            color: white;
+        }
+
+        .searches-card table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .searches-card table th,
+        .searches-card table td {
+            padding: 8px 12px;
+            text-align: left;
+            color: white;
+        }
+
+        .searches-card table th {
+            background-color: #2d3b48;
+        }
+
+        .searches-card table tr:nth-child(even) {
+            background-color: #3a4a5a;
+        }
+
+        .searches-card table tr:nth-child(odd) {
+            background-color: #2d3b48;
+        }
     </style>
 </head>
 
@@ -192,23 +235,63 @@
         <div class="forecast">
             <% forecast.forEach(day=> { %>
                 <div class="forecast-card">
-                    <div class="day"><%= day.date %></div>
+                    <div class="day">
+                        <%= day.date %>
+                    </div>
                     <div class="icon"><%- day.emoji %></div>
-                    <div><%= day.high %>&deg; | <%= day.low %>&deg;</div>
-                    <div><%= day.condition %></div>
+                    <div>
+                        <%= day.high %>&deg; | <%= day.low %>&deg;
+                    </div>
+                    <div>
+                        <%= day.condition %>
+                    </div>
                 </div>
-            <% }); %>
+                <% }); %>
         </div>
 
         <div class="moon-card">
             <div class="details">
-                <h1><%= moonPhase %></h1>
-                <p>Illumination: <%= moonIllumination %></p>
+                <h1>
+                    <%= moonPhase %>
+                </h1>
+                <p>Illumination: <%= moonIllumination %>
+                </p>
             </div>
             <div class="icon moon-icon" id="moon-icon">
                 <%- moonEmoji %>
             </div>
         </div>
+        <div class="searches-card">
+            <h4>
+                <%= name %>'s Last 5 Searches
+            </h4>
+            <table border="1" style="border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Destination</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (let i=previousSearches.length -1, j=1; i>= previousSearches.length -5; i--) { %>
+                        <tr>
+                            <td>
+                                <%= j%>
+                                    <% j++ %>
+                            </td>
+                            <td>
+                                <% if (previousSearches[i]) { %>
+                                    <%= previousSearches[i] %>
+                                        <% } else { %>
+                                            -
+                                            <% } %>
+                            </td>
+                        </tr>
+                        <% } %>
+                </tbody>
+            </table>
+        </div>
+
     </div>
     <script>
         const description = "<%= description.toLowerCase() %>";

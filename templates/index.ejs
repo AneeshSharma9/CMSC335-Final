@@ -80,12 +80,14 @@
     <div class="container">
         <h1 class="main_header">TerpWeather</h1>
         <form action="/weather" method="POST">
+            <p>Enter your name below: </p>
+            <input type="text" name="name" placeholder="Enter name" value="<%= name %>" required> <br><br>
             <p>Enter a city / zipcode to check the weather:</p>
             <input type="text" name="location" placeholder="Enter city / zipcode" list="previous-searches" required>
             <datalist id="previous-searches">
-                <% previousSearches.forEach(search => { %>
+                <% previousSearches.forEach(search=> { %>
                     <option value="<%= search %>"></option>
-                <% }); %>
+                    <% }); %>
             </datalist>
             <button type="submit">Check Weather</button>
         </form>

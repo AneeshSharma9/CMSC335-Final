@@ -1,12 +1,11 @@
 const express = require("express");
 const path = require('path');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-
+const cookieParser = require("cookie-parser");
 require('dotenv').config();
 
 if (process.argv.length != 2) {
-    console.log("Usage server.js");
+    console.log("Usage: server.js");
     process.exit(0);
 }
 
@@ -17,14 +16,6 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 console.log(`Web server started and running at http://localhost:${portNumber}`);
-
-app.use((req, res, next) => {
-    if (!req.cookies.userId) {
-        const userId = require('crypto').randomUUID();
-        res.cookie('userId', userId, { httpOnly: true, maxAge: 365 * 24 * 60 * 60 * 1000 });
-    }
-    next();
-});
 
 const databaseAndCollection = { db: process.env.MONGO_DB_NAME, collection: process.env.MONGO_COLLECTION };
 const { MongoClient, ServerApiVersion } = require('mongodb');
@@ -75,21 +66,23 @@ function getMoonEmoji(phase) {
 }
 
 app.get("/", async (req, res) => {
-    const userId = req.cookies.userId;
+    const name = req.cookies.name || ""; // Check if a name is already stored in the cookie
 
-    await client.connect();
-    const database = client.db(databaseAndCollection.db);
-    const collection = database.collection(databaseAndCollection.collection);
-
-    const userData = await collection.findOne({ userId: userId });
-    const previousSearches = userData?.searches?.map(search => search.city) || [];
-
-    res.render("index", { previousSearches });
+    res.render("index", { previousSearches: [], name }); // Pass empty searches initially
 });
 
 app.post("/weather", async (req, res) => {
-    const { location: city } = req.body;
-    const userId = req.cookies.userId;
+    let { location: city, name } = req.body;
+
+    if (!name) {
+        name = req.cookies.name; // Retrieve name from cookie if not present in request
+    }
+
+    if (!name) {
+        return res.redirect("/"); // Redirect back to index if no name is provided
+    }
+
+    res.cookie("name", name, { httpOnly: true, maxAge: 365 * 24 * 60 * 60 * 1000 }); // Set name cookie
 
     if (city.trim() === "") {
         return res.status(400).send({ error: "City is required" });
@@ -100,8 +93,8 @@ app.post("/weather", async (req, res) => {
         const database = client.db(databaseAndCollection.db);
         const collection = database.collection(databaseAndCollection.collection);
 
-        let userData = await collection.findOne({ userId: userId });
-        let previousSearches = userData?.searches?.map(search => search.city) || [];
+        let userData = await collection.findOne({ name: name });
+        let previousSearches = userData?.searches?.map((search) => search.city) || [];
 
         const apiKey = process.env.WEATHER_API_KEY;
         const weatherUrl = `https://api.weatherapi.com/v1/forecast.json?q=${encodeURIComponent(city)}&key=${apiKey}&days=7`;
@@ -123,7 +116,7 @@ app.post("/weather", async (req, res) => {
             gradient = "linear-gradient(to bottom, #000033, #000011)";
         }
 
-        const forecast = weatherData.forecast.forecastday.map(day => ({
+        const forecast = weatherData.forecast.forecastday.map((day) => ({
             date: day.date,
             condition: day.day.condition.text,
             high: day.day.maxtemp_f,
@@ -134,19 +127,19 @@ app.post("/weather", async (req, res) => {
         const location = `${weatherData.location.name}, ${weatherData.location.region}`;
         if (previousSearches.includes(location)) {
             await collection.updateOne(
-                { userId: userId, "searches.city": location },
+                { name: name, "searches.city": location },
                 { $set: { "searches.$.timestamp": new Date() } }
             );
         } else {
             await collection.updateOne(
-                { userId: userId },
+                { name: name },
                 { $push: { searches: { city: location, timestamp: new Date() } } },
                 { upsert: true }
             );
         }
 
-        userData = await collection.findOne({ userId: userId });
-        previousSearches = userData?.searches?.map(search => search.city) || [];
+        userData = await collection.findOne({ name: name });
+        previousSearches = userData?.searches?.map((search) => search.city) || [];
 
         const data = {
             city: weatherData.location.name,
@@ -160,6 +153,7 @@ app.post("/weather", async (req, res) => {
             gradient: gradient,
             forecast: forecast,
             previousSearches: previousSearches,
+            name: name
         };
 
         res.render("weather", data);

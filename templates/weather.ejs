@@ -63,7 +63,7 @@
 
         .moon-icon {
             font-size: 8em;
-            filter: grayscale(100%);
+
         }
 
         .forecast {
@@ -227,7 +227,11 @@
                 </div>
             </div>
             <div class="icon">
-                <%- currentEmoji %>
+                <% if (isNightTime) { %>
+                    <%- moonEmoji %>
+                        <% } else { %>
+                            <%- currentEmoji %>
+                                <% } %>
             </div>
         </div>
 

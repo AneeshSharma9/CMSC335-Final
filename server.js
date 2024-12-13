@@ -30,17 +30,18 @@ const client = new MongoClient(uri, {
 
 function getWeatherEmoji(condition) {
     if (condition.toLowerCase().includes("snow")) {
-        return "&#10052;";
+        return `<span style="color: #00BFFF;">&#10052;</span>`;
     } else if (condition.toLowerCase().includes("rain")) {
-        return "&#127783;";
+        return `<span style="color: #1E90FF;">&#127783;</span>`;
     } else if (condition.toLowerCase().includes("cloud")) {
-        return "&#9729;";
+        return `<span style="color: #B0C4DE;">&#9729;</span>`;
     } else if (condition.toLowerCase().includes("sun")) {
-        return "&#9728;";
+        return `<span style="color: #FFD700;">&#9728;</span>`;
     } else {
-        return "&#9925;";
+        return `<span style="color: #808080;">&#9925;</span>`;
     }
 }
+
 
 function getMoonEmoji(phase) {
     switch (phase.toLowerCase()) {
@@ -106,6 +107,7 @@ app.post("/weather", async (req, res) => {
         const moonData = await moonResponse.json();
 
         const hour = parseInt(weatherData.location.localtime.split(" ")[1].split(":")[0]);
+        const isNightTime = (hour >= 18 || hour < 7);
 
         let gradient = "";
         if (hour >= 7 && hour < 18) {
@@ -153,7 +155,8 @@ app.post("/weather", async (req, res) => {
             gradient: gradient,
             forecast: forecast,
             previousSearches: previousSearches,
-            name: name
+            name: name,
+            isNightTime, isNightTime
         };
 
         res.render("weather", data);

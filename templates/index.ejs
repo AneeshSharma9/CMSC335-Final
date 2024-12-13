@@ -42,7 +42,7 @@
         input {
             margin-bottom: 10px;
             padding: 10px;
-            width: calc(100% - 22px); /* Ensure input fits the container */
+            width: calc(100% - 22px);
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 1rem;
@@ -79,9 +79,9 @@
 <body>
     <div class="container">
         <h1 class="main_header">TerpWeather</h1>
-        <form action="/weather" method="GET">
-            <p>Enter a city/zipcode to check the weather:</p>
-            <input type="text" name="location" placeholder="Enter city/zipcode" list="previous-searches" required>
+        <form action="/weather" method="POST">
+            <p>Enter a city / zipcode to check the weather:</p>
+            <input type="text" name="location" placeholder="Enter city / zipcode" list="previous-searches" required>
             <datalist id="previous-searches">
                 <% previousSearches.forEach(search => { %>
                     <option value="<%= search %>"></option>

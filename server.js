@@ -37,27 +37,6 @@ const client = new MongoClient(uri, {
     }
 });
 
-process.stdout.write("Stop to shutdown the server: ");
-process.stdin.on("readable", async function () {
-    let dataInput = process.stdin.read();
-    if (dataInput !== null) {
-        let command = dataInput.toString().trim();
-        if (command === "stop") {
-            console.log(`Shutting down the server`);
-            try {
-                await client.close();
-            } catch (e) {
-                console.error("Error closing MongoDB connection:", e);
-            }
-            process.exit(0);
-        } else {
-            process.stdout.write(`Invalid command: ${command}\n`);
-        }
-        process.stdout.write("Stop to shutdown the server: ");
-        process.stdin.resume();
-    }
-});
-
 function getWeatherEmoji(condition) {
     if (condition.toLowerCase().includes("snow")) {
         return "&#10052;";
@@ -95,7 +74,6 @@ function getMoonEmoji(phase) {
     }
 }
 
-
 app.get("/", async (req, res) => {
     const userId = req.cookies.userId;
 
@@ -109,8 +87,8 @@ app.get("/", async (req, res) => {
     res.render("index", { previousSearches });
 });
 
-app.get("/weather", async (req, res) => {
-    const city = req.query.location;
+app.post("/weather", async (req, res) => {
+    const { location: city } = req.body;
     const userId = req.cookies.userId;
 
     if (!city) {
@@ -138,7 +116,7 @@ app.get("/weather", async (req, res) => {
 
         let gradient = "";
         if (hour >= 7 && hour < 18) {
-            gradient = "linear-gradient(to bottom, #000033, #000011)";
+            gradient = "linear-gradient(to bottom, #87CEEB, #e6f7ff)";
         } else if (hour >= 18 && hour < 24) {
             gradient = "linear-gradient(to bottom, #1e293b, #0f172a)";
         } else {
@@ -153,7 +131,7 @@ app.get("/weather", async (req, res) => {
             emoji: getWeatherEmoji(day.day.condition.text),
         }));
 
-        const location = `${weatherData.location.name}, ${weatherData.location.region}`
+        const location = `${weatherData.location.name}, ${weatherData.location.region}`;
         if (previousSearches.includes(location)) {
             await collection.updateOne(
                 { userId: userId, "searches.city": location },
@@ -170,7 +148,7 @@ app.get("/weather", async (req, res) => {
         userData = await collection.findOne({ userId: userId });
         previousSearches = userData?.searches?.map(search => search.city) || [];
 
-        data = {
+        const data = {
             city: weatherData.location.name,
             state: weatherData.location.region,
             temperature: weatherData.current.temp_f,
@@ -192,5 +170,4 @@ app.get("/weather", async (req, res) => {
         await client.close();
     }
 });
-
 app.listen(portNumber);

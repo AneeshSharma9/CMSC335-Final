@@ -4,63 +4,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather in <%= city %>, <%= state %>
-    </title>
+    <title>Weather Dashboard</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: <%= gradient %>;
             color: white;
-            background: <%=gradient %>;
-            /* Dynamically set gradient */
-            background-size: cover;
-            background-attachment: fixed;
-            transition: background 0.5s ease-in-out;
+            display: flex;
+            height: 100vh;
         }
 
-        input {
-            margin: 10px;
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .search-bar {
+            width: 50%;
             padding: 10px;
-            width: 200px;
-            border: 1px solid #ccc;
+            margin-bottom: 20px;
             border-radius: 5px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: white;
-            color: #333;
             border: none;
+        }
+
+        .search-button {
+            padding: 10px;
+            margin-bottom: 20px;
             border-radius: 5px;
-            cursor: pointer;
         }
 
-        button:hover {
-            background-color: #ccc;
+        .current-weather {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
-        hr {
-            margin: 20px 0;
-            border-color: rgba(255, 255, 255, 0.3);
+        .moon-card {
+            display: flex;
+            width: 30%;
+            justify-content: space-between;
+            align-items: center;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
-        table {
-            margin: 0 auto;
-            border-collapse: collapse;
-            width: 80%;
-            color: white;
+        .moon-icon {
+            font-size: 8em;
+            filter: grayscale(100%);
         }
 
-        th,
-        td {
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px;
+        .forecast {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 20px;
+        }
+
+        .forecast-card {
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 10px;
             text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
-        th {
-            background-color: rgba(255, 255, 255, 0.2);
+        h1, h2, h3 {
+            margin: 0;
+        }
+
+        .temperature {
+            margin-top:30px;
+            margin-bottom:15px;
+            font-size: 3em;
+        }
+
+        .icon {
+            font-size: 8em;
+        }
+
+        .details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .forecast-card .icon {
+            font-size: 4em;
+        }
+
+        .day {
+            font-size: 1.2em;
+            margin-bottom: 5px;
         }
 
         #animation {
@@ -103,60 +149,66 @@
 
 <body>
     <div id="animation"></div>
-    <h1>Weather in <%= city %>, <%= state %>
-    </h1>
-    <form action="/weather" method="GET">
-        <p>Enter a city/zipcode to check the weather:</p>
-        <input type="text" name="location" placeholder="Enter city/zipcode" required>
-        <button type="submit">Check Weather</button>
-    </form>
+    <div class="content">
+        <form action="/weather" method="GET">
+            <input type="text" class="search-bar" name="location" placeholder="Search for city/zipcode"
+                list="previous-searches" required>
+            <datalist id="previous-searches">
+                <% previousSearches.forEach(search=> { %>
+                    <option value="<%= search %>"></option>
+                    <% }); %>
+            </datalist>
+            <button class="search-button" type="submit">Check Weather</button>
+        </form>
 
-    <h1>
-        <%= temperature %> °F<h1>
-                <h2>
+        <div class="current-weather">
+            <div class="details">
+                <h1>
+                    <%= city %>, <%= state %>
+                </h1>
+                <div class="temperature">
+                    <%= temperature %>&deg;
+                </div>
+                <div>
                     <%= description %>
-                        <h2>
+                </div>
+            </div>
+            <div class="icon">
+                <%- currentEmoji %>
+            </div>
+        </div>
 
-                            <hr>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Condition</th>
-                                        <th>High (°F)</th>
-                                        <th>Low (°F)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% forecast.forEach(day=> { %>
-                                        <tr>
-                                            <td>
-                                                <%= day.date %>
-                                            </td>
-                                            <td>
-                                                <%= day.condition %>
-                                            </td>
-                                            <td>
-                                                <%= day.high %>
-                                            </td>
-                                            <td>
-                                                <%= day.low %>
-                                            </td>
-                                        </tr>
-                                        <% }); %>
-                                </tbody>
-                            </table>
+        <h2>7-Day Forecast</h2>
+        <div class="forecast">
+            <% forecast.forEach(day=> { %>
+                <div class="forecast-card">
+                    <div class="day"><%= day.date %></div>
+                    <div class="icon"><%- day.emoji %></div>
+                    <div><%= day.high %>&deg; | <%= day.low %>&deg;</div>
+                    <div><%= day.condition %></div>
+                </div>
+            <% }); %>
+        </div>
 
+        <div class="moon-card">
+            <div class="details">
+                <h1><%= moonPhase %></h1>
+                <p>Illumination: <%= moonIllumination %></p>
+            </div>
+            <div class="icon moon-icon" id="moon-icon">
+                <%- moonEmoji %>
+            </div>
+        </div>
+    </div>
+    <script>
+        const description = "<%= description.toLowerCase() %>";
 
-                            <script>
-                                const description = "<%= description.toLowerCase() %>";
-
-                                if (description.includes("snow")) {
-                                    document.body.classList.add("snow");
-                                } else if (description.includes("rain")) {
-                                    document.body.classList.add("rain");
-                                }
-                            </script>
+        if (description.includes("snow")) {
+            document.body.classList.add("snow");
+        } else if (description.includes("rain")) {
+            document.body.classList.add("rain");
+        }
+    </script>
 </body>
 
 </html>

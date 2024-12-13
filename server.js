@@ -91,7 +91,7 @@ app.post("/weather", async (req, res) => {
     const { location: city } = req.body;
     const userId = req.cookies.userId;
 
-    if (!city) {
+    if (city.trim() === "") {
         return res.status(400).send({ error: "City is required" });
     }
 
@@ -165,7 +165,6 @@ app.post("/weather", async (req, res) => {
         res.render("weather", data);
     } catch (e) {
         console.error(e);
-        res.status(500).send("Internal Server Error");
     } finally {
         await client.close();
     }

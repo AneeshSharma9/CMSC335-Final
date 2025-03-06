@@ -67,23 +67,21 @@ function getMoonEmoji(phase) {
 }
 
 app.get("/", async (req, res) => {
-    const name = req.cookies.name || ""; // Check if a name is already stored in the cookie
-
-    res.render("index", { previousSearches: [], name }); // Pass empty searches initially
+    const name = req.cookies.name || "";
+    res.render("index", { previousSearches: [], name });
 });
 
 app.post("/weather", async (req, res) => {
     let { location: city, name } = req.body;
 
     if (!name) {
-        name = req.cookies.name; // Retrieve name from cookie if not present in request
+        name = req.cookies.name;
     }
-
     if (!name) {
-        return res.redirect("/"); // Redirect back to index if no name is provided
+        return res.redirect("/");
     }
 
-    res.cookie("name", name, { httpOnly: true, maxAge: 365 * 24 * 60 * 60 * 1000 }); // Set name cookie
+    res.cookie("name", name, { httpOnly: true, maxAge: 365 * 24 * 60 * 60 * 1000 });
 
     if (city.trim() === "") {
         return res.status(400).send({ error: "City is required" });
